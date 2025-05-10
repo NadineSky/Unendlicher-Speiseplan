@@ -1,16 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Unendlicher Speiseplan von Nadine</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unendlicher Speiseplan von Nadine</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Unendlicher Speiseplan von Nadine</h1>
-  <div id="rezepte-container">
-    <p>Hier erscheinen deine Rezepte!</p>
-  </div>
-  <script src="main.js"></script>
+    <h1>Unendlicher Speiseplan von Nadine</h1>
+    <div id="form">
+        <input type="text" id="title" placeholder="Rezepttitel">
+        <textarea id="ingredients" placeholder="Zutaten (eine pro Zeile)"></textarea>
+        <textarea id="instructions" placeholder="Zubereitung"></textarea>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button onclick="addRecipe()">Rezept hinzufügen</button>
+    </div>
+    <div id="recipes"></div>
+    <script src="main.js"></script>
 </body>
 </html>
