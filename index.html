@@ -1,22 +1,104 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unendlicher Speiseplan von Nadine</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unendlicher Speiseplan von Nadine</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      padding: 2rem;
+      background-color: #eaf8f0;
+      color: #2e4d35;
+    }
+    h1 {
+      color: #347a49;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      margin-top: 1rem;
+      font-weight: bold;
+      display: block;
+    }
+    input[type="text"], textarea, input[type="file"] {
+      background-color: #ffffff;
+      border: 1px solid #a0c5aa;
+      border-radius: 10px;
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 500px;
+      margin-top: 0.5rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      color: white;
+      background-color: #5ca375;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #4e8d63;
+    }
+    #preview {
+      margin-top: 1rem;
+      max-width: 300px;
+      border: 2px solid #a0c5aa;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
-    <h1>Unendlicher Speiseplan von Nadine</h1>
-    <div id="form">
-        <input type="text" id="title" placeholder="Rezepttitel">
-        <textarea id="ingredients" placeholder="Zutaten (eine pro Zeile)"></textarea>
-        <textarea id="instructions" placeholder="Zubereitung"></textarea>
-        <input type="file" id="imageUpload" accept="image/*">
-        <button onclick="addRecipe()">Rezept hinzufügen</button>
-    </div>
-    <div id="recipes"></div>
-    <script src="main.js"></script>
+  <h1>Unendlicher Speiseplan von Nadine</h1>
+  <label for="imageUpload">Foto oder Screenshot hochladen:</label>
+  <input type="file" id="imageUpload" accept="image/*">
+  <img id="preview" src="" alt="Vorschau" />
+
+  <label>Rezepttitel</label>
+  <input type="text" id="title">
+
+  <label>Zutaten (eine pro Zeile)</label>
+  <textarea id="zutaten" rows="5"></textarea>
+
+  <label>Zubereitung</label>
+  <textarea id="zubereitung" rows="5"></textarea>
+
+  <script>
+    const imageUpload = document.getElementById('imageUpload');
+    const preview = document.getElementById('preview');
+
+    imageUpload.addEventListener('change', async () => {
+      const file = imageUpload.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        preview.src = e.target.result;
+
+        const result = await Tesseract.recognize(e.target.result, 'deu');
+        const text = result.data.text;
+
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+        document.getElementById('title').value = lines[0];
+
+        const zutatenIndex = lines.findIndex(l => l.toLowerCase().includes('zutaten'));
+        const zubereitungIndex = lines.findIndex(l => l.toLowerCase().includes('zubereitung'));
+
+        if (zutatenIndex !== -1 && zubereitungIndex !== -1) {
+          const zutaten = lines.slice(zutatenIndex + 1, zubereitungIndex);
+          const zubereitung = lines.slice(zubereitungIndex + 1);
+          document.getElementById('zutaten').value = zutaten.join('\n');
+          document.getElementById('zubereitung').value = zubereitung.join(' ');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
 </body>
 </html>
